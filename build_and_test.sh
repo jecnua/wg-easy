@@ -34,13 +34,14 @@ fi
 # Test with trivy
 buildah push "${MANIFEST_NAME}" "oci:/tmp/${IMAGE_TAG}.tar"
 trivy image --input "/tmp/${IMAGE_TAG}.tar"
-rm -fr "/tmp/${IMAGE_TAG}.tar"
+rm -fr "/tmp/${IMAGE_TAG}.tar" # Cleanup
 
 # Choose if you want to push or not
 read -e -p "$MESSAGE" choice
 if [[ "$choice" == [Yy]* ]]
 then
   buildah manifest push --all "${MANIFEST_NAME}" docker://"${MANIFEST_NAME}"
+  buildah rmi --all # Cleanup on successfull pull
 fi
 
 echo "$MANIFEST_NAME"
