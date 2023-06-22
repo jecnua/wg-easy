@@ -14,6 +14,8 @@ FROM docker.io/library/node:14-alpine3.17 AS build_node_modules
 # Copy Web UI
 COPY src/ /app/
 WORKDIR /app
+RUN npm audit fix
+RUN npm i -g npm-check-updates && ncu -u && npm i
 RUN npm ci --production
 
 # Copy build result to a new image.
@@ -32,7 +34,6 @@ RUN mv /app/node_modules /node_modules
 
 # Enable this to run `npm run serve`
 RUN npm i -g nodemon
-
 RUN apk update && apk upgrade --no-cache
 
 # Install Linux packages
