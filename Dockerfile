@@ -9,18 +9,20 @@
 # #
 # #
 
-FROM docker.io/library/node:14-alpine3.17 AS build_node_modules
+FROM docker.io/library/node:18-alpine AS build_node_modules
 
 # Copy Web UI
 COPY src/ /app/
 WORKDIR /app
-RUN npm audit fix
-RUN npm i -g npm-check-updates && ncu -u && npm i
-RUN npm ci --production
+RUN npm install -g npm@9.7.2
+#RUN npm audit fix
+#RUN npm i -g npm-check-updates && ncu -u && npm i
+RUN npm install
+RUN npm ci --omit=dev # --production
 
 # Copy build result to a new image.
 # This saves a lot of disk space.
-FROM docker.io/library/node:14-alpine3.17
+FROM docker.io/library/node:18-alpine
 COPY --from=build_node_modules /app /app
 
 # Move node_modules one directory up, so during development
